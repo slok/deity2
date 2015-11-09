@@ -1,0 +1,11 @@
+
+
+- name: Start service discovery (Consul)
+  docker:
+    name: service-discovery
+    command: -server -bootstrap -ui-dir /ui
+    image: progrium/consul
+    state: present
+    hostname: consul
+    ports:
+      - "8500:8500"

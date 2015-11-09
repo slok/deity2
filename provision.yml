@@ -25,3 +25,15 @@
     - all
     - docker
     - pre
+
+- name: Install master
+  hosts: master
+  sudo: True
+  gather_facts: False
+  roles:
+    - service-discovery
+#    - swarm-master
+  tags:
+    - master
+    - swarm
+    - service-discovery
