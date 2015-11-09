@@ -1,0 +1,19 @@
+
+# Main user stuff (Used to do all the playbook)
+main_user: ci
+ssh_public_key_files:
+  - "~/.ssh/ci.pub"
+
+# Used for the first time action (create the main user)
+#first_remote_user: ""
+#first_ansible_ssh_user: ""
+#first_ansible_ssh_private_key_file: ""
+
+# Ansible connection data
+remote_user: "{{ main_user }}"
+ansible_ssh_user: "{{ main_user }}"
+ansible_ssh_private_key_file: "~/.ssh/ci"
+
+# Docker vars
+docker_manage_port: 2376
+docker_master_manage_port: 3376

@@ -1,0 +1,2 @@
+
+docker_opts: "-H tcp://0.0.0.0:{{docker_manage_port}} -H unix:///var/run/docker.sock"

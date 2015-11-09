@@ -1,0 +1,3 @@
+first_remote_user: "vagrant"
+first_ansible_ssh_user: "vagrant"
+first_ansible_ssh_private_key_file: "~/.vagrant.d/insecure_private_key"

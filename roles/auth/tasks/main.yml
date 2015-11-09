@@ -1,0 +1,44 @@
+- name: Create Docker group
+  group:
+    name: docker
+    state: present
+
+  tags:
+    - docker
+    - create_group
+
+- name: Create main user
+  user:
+    group: users
+    groups: "docker"
+    name: "{{ main_user }}"
+    shell: "/bin/bash"
+    state: present
+
+  tags:
+    - main_user
+    - create_user
+
+- name: Add main user to sudoers
+  lineinfile:
+    dest: "/etc/sudoers.d/{{ main_user }}"
+    owner: root
+    group: root
+    mode: 0440
+    state: present
+    create: yes
+    line: "{{ main_user }} ALL=(ALL) NOPASSWD:ALL"
+
+  tags:
+    - sudoers
+    - main_user
+
+
+- name: Copy main user public keys
+  authorized_key:
+    user: "{{ main_user }}"
+    key: "{{ item }}"
+  with_file: ssh_public_key_files
+  tags:
+    - main_user
+    - public_keys
