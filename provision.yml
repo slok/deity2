@@ -3,6 +3,7 @@
 - name: Set up authentication & authorization
   hosts: all
   sudo: True
+  gather_facts: False
   vars:
     remote_user: "{{ first_remote_user }}"
     ansible_ssh_user: "{{ first_ansible_ssh_user }}"
@@ -13,6 +14,17 @@
   tags:
     - all
     - auth
+    - pre
+
+- name: Install the dependencies
+  hosts: all
+  sudo: True
+  gather_facts: False
+  roles:
+    - dependencies
+  tags:
+    - all
+    - dependencies
     - pre
 
 - name: Install Docker

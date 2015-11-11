@@ -17,3 +17,6 @@ ansible_ssh_private_key_file: "~/.ssh/ci"
 # Docker vars
 docker_manage_port: 2376
 docker_master_manage_port: 3376
+
+common_pip_dependencies:
+  docker-compose: 1.5.0
