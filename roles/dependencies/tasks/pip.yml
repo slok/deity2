@@ -5,16 +5,38 @@
     state: present
     update_cache: yes
   tags:
-    - pip_instsall
+    - pip_install
+    - dependency
 
-- name: Install docker tools
+- name: Install pip2
+  apt:
+    name: python-pip
+    state: present
+    update_cache: yes
+  tags:
+    - pip_install
+    - dependency
+
+- name: Install pip3 dependencies
   pip:
     name: "{{ item.key }}"
     version: "{{ item.value }}"
     state: present
     executable: pip3
-  with_dict: "{{ common_pip_dependencies }}"
+  with_dict: "{{ common_pip3_dependencies }}"
 
   tags:
-    - pip
+    - pip3
+    - dependency
+
+- name: Install pip2 dependencies
+  pip:
+    name: "{{ item.key }}"
+    version: "{{ item.value }}"
+    state: present
+    executable: pip
+  with_dict: "{{ common_pip2_dependencies }}"
+
+  tags:
+    - pip2
     - dependency

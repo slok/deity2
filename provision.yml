@@ -38,14 +38,25 @@
     - docker
     - pre
 
-- name: Install master
+- name: Setup master
   hosts: master
   sudo: True
-  gather_facts: False
+  gather_facts: True
   roles:
     - service-discovery
-#    - swarm-master
+    - swarm-master
   tags:
     - master
+    - swarm
+    - service-discovery
+
+- name: Setup nodes
+  hosts: nodes
+  sudo: True
+  gather_facts: True
+  roles:
+    - swarm-agent
+  tags:
+    - agent
     - swarm
     - service-discovery

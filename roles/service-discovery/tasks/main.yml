@@ -5,7 +5,11 @@
     name: service-discovery
     command: -server -bootstrap -ui-dir /ui
     image: progrium/consul
-    state: present
+    state: reloaded
     hostname: consul
     ports:
-      - "8500:8500"
+      - "{{ service_discovery_port }}:{{ service_discovery_port }}"
+
+  tags:
+    - consul
+    - service-discovery

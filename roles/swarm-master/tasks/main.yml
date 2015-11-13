@@ -1,0 +1,14 @@
+
+
+- name: Start swarm master
+  docker:
+    name: swarm-manager
+    command: manage consul://{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}:{{ service_discovery_port }}/swarm
+    image: swarm
+    state: reloaded
+    hostname: swarm-manager
+    ports:
+      - "{{ docker_master_manage_port }}:2375"
+  tags:
+    - master
+    - swarm
