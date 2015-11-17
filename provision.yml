@@ -32,10 +32,21 @@
   sudo: True
   gather_facts: False
   roles:
-    - docker
+    - docker-install
   tags:
     - all
     - docker
+    - pre
+
+- name: Install Flocker
+  hosts: all
+  sudo: True
+  gather_facts: False
+  roles:
+    - flocker-install
+  tags:
+    - all
+    - flocker
     - pre
 
 - name: Setup master
@@ -55,7 +66,6 @@
   gather_facts: True
   roles:
     - swarm-agent
-    - flocker
   tags:
     - node
     - agent

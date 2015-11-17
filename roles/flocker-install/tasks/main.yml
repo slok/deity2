@@ -6,7 +6,6 @@
       line: "deb https://clusterhq-archive.s3.amazonaws.com/ubuntu/14.04/$(ARCH) /"
       state: present
   tags:
-    - flocker
     - flocker_repo
 
 - name: Install flocker node
@@ -18,6 +17,6 @@
   with_items:
     - clusterhq-flocker-node
     - clusterhq-flocker-docker-plugin
+    - clusterhq-flocker-cli
   tags:
-    - flocker
     - flocker_install
