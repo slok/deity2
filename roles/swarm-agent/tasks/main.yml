@@ -1,10 +1,11 @@
+# TODO: Refactor: {{ hostvars[inventory_hostname]['ansible_ssh_host'] }}
 - name: Start swarm agent
   docker:
     name: swarm-agent
     command: >
         join
         --addr={{ hostvars[inventory_hostname]['ansible_ssh_host'] }}:{{ docker_manage_port }}
-        consul://{{ hostvars['0.ci.deity2.org']['ansible_ssh_host'] }}:{{ service_discovery_port }}/swarm
+        consul://{{ consul_node }}:{{ service_discovery_port }}/swarm
     image: swarm
     state: reloaded
     hostname: swarm-agent
