@@ -1,0 +1,23 @@
+
+- name: Add flocker repo
+  lineinfile:
+      dest: "/etc/apt/sources.list"
+      state: present
+      line: "deb https://clusterhq-archive.s3.amazonaws.com/ubuntu/14.04/$(ARCH) /"
+      state: present
+  tags:
+    - flocker
+    - flocker_repo
+
+- name: Install flocker node
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: present
+    force: yes
+  with_items:
+    - clusterhq-flocker-node
+    - clusterhq-flocker-docker-plugin
+  tags:
+    - flocker
+    - flocker_install
