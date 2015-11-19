@@ -1,1 +1,13 @@
-
+- name: Set flocker certificates on agents
+  synchronize:
+    mode: pull
+    src: "/etc/flocker/{{ item.src }}"
+    dest: "/etc/flocker/{{ item.dest }}"
+  with_items:
+    - { src: "control-{{ inventory_hostname }}.crt", dest: "control-service.crt" }
+    - { src: "control-{{ inventory_hostname }}.key", dest: "control-service.crt" }
+    - { src: "cluster.crt", dest: "cluster.crt"}
+  delegate_to: "{{ master_node }}"
+  tags:
+    - flocker_certificates
+    - flocker_control_certificate

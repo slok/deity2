@@ -8,6 +8,7 @@
     - cluster.crt
   tags:
     - flocker_certificates
+    - flocker_cluster_certificate
 
 - name: Create flocker cluster certificates
   command: "flocker-ca initialize {{ flocker_cluster_name }}"
@@ -16,5 +17,19 @@
 
   tags:
     - flocker_certificates
+    - flocker_cluster_certificate
 
   when: not cluster_certs.results.0.stat.exists or not cluster_certs.results.1.stat.exists
+
+- name: Create flocker control certificates for nodes
+  command: "flocker-ca create-control-certificate {{ item }}"
+  args:
+    chdir: /etc/flocker
+
+  with_items: "{{ groups['nodes'] }}"
+  register: command_result
+  failed_when: "command_result.rc and 'File exists' not in command_result.stderr"
+  changed_when: "'Created' in command_result.stdout"
+  tags:
+    - flocker_certificates
+    - flocker_control_certificate
