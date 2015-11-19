@@ -1,0 +1,20 @@
+
+- name: Check flocker cluster certificates
+  stat:
+    path: "/etc/flocker/{{ item }}"
+  register: cluster_certs
+  with_items:
+    - cluster.key
+    - cluster.crt
+  tags:
+    - flocker_certificates
+
+- name: Create flocker cluster certificates
+  command: "flocker-ca initialize {{ flocker_cluster_name }}"
+  args:
+    chdir: /etc/flocker
+
+  tags:
+    - flocker_certificates
+
+  when: not cluster_certs.results.0.stat.exists or not cluster_certs.results.1.stat.exists

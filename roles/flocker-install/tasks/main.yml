@@ -20,3 +20,11 @@
     - clusterhq-flocker-cli
   tags:
     - flocker_install
+
+- name: Create flocker certificate path
+  file:
+    path: /etc/flocker
+    state: directory
+    mode: 0755
+  tags:
+    - flocker_certificates

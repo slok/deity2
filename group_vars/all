@@ -19,9 +19,12 @@ docker_manage_port: 2376
 docker_master_manage_port: 3376
 service_discovery_port: 8500
 
+# Dependecies
+# This common dependecies include ansible dependencies on remote hosts
 common_pip3_dependencies:
   docker-compose: 1.5.0
-
-# This common dependecies include ansible dependencies on remote hosts
 common_pip2_dependencies:
     docker-py: 1.5.0
+
+# Flocker settings
+flocker_cluster_name: flckci
