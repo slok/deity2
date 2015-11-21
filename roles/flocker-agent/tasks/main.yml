@@ -17,40 +17,66 @@
 #    - sync
 #
 
-# Small hack because above command doesn't work wel...
-- name: Register node neccessary flocker keys
-  command: cat "/etc/flocker/{{ item }}"
-  register: "flocker_node_keys"
-  with_items:
-    - "control-{{ inventory_hostname }}.crt"
-    - "control-{{ inventory_hostname }}.key"
-    - "cluster.crt"
+#- name: Check node authentication certificates present
+#  stat: path=/etc/flocker/{{ item }}
+#  register: auth_certs
+#  with_items:
+#    - node.crt
+#    - node.key
+#  tags:
+#    - flocker_certificates
+#    - flocker_authentication_certificate
+
+# Small hack because synchronize doesn't work well...
+- name: Create flocker node authentication certificates
+  command: "flocker-ca create-node-certificate"
+  args:
+    chdir: /etc/flocker
+  register: flocker_auth_cert
   delegate_to: "{{ master_node }}"
+#  when: "not auth_certs.results.0.stat.exists or not auth_certs.results.1.stat.exists"
   tags:
     - flocker_certificates
-    - flocker_control_certificate
+    - flocker_authentication_certificate
 
-- name: Move node neccessary flocker keys to each node
+- name: Get flocker node authentication certificates
+  command: cat "/etc/flocker/{{ item }}"
+  register: "flocker_auth_cert_body"
+  delegate_to: "{{ master_node }}"
+  with_items:
+    - "{{ flocker_auth_cert.stdout | regex_replace('.*([a-f0-9-]{36})\\.crt.*', '\\1') }}.crt"
+    - "{{ flocker_auth_cert.stdout | regex_replace('.*([a-f0-9-]{36})\\.crt.*', '\\1') }}.key"
+  tags:
+    - flocker_certificates
+    - flocker_authentication_certificate
+
+- name: Set flocker node authentication certificates on nodes
   copy:
     content: "{{ item.stdout }}"
     dest: "/etc/flocker/{{ item.item }}"
     owner: root
     group: root
-    mode: 0666
-  with_items: "{{ flocker_node_keys.results }}"
+    mode: 0600
+  with_items: "{{ flocker_auth_cert_body.results }}"
   tags:
     - flocker_certificates
-    - flocker_control_certificate
+    - flocker_authentication_certificate
 
-- name: Set correct name to flocker keys
+- name: Set correct name flocker node authentication certificates
   command: "mv {{ item.src }} {{ item.dest }}"
   args:
     chdir: /etc/flocker
     #creates: "{{ item.dest }}"
   with_items:
-    - { src: "control-{{ inventory_hostname }}.crt", dest: "control-service.crt" }
-    - { src: "control-{{ inventory_hostname }}.key", dest: "control-service.key" }
+    - {
+        src: "{{ flocker_auth_cert.stdout | regex_replace('.*([a-f0-9-]{36})\\.crt.*', '\\1') }}.crt",
+        dest: "node.crt"
+    }
+    - {
+        src: "{{ flocker_auth_cert.stdout | regex_replace('.*([a-f0-9-]{36})\\.crt.*', '\\1') }}.key",
+        dest: "node.key"
+    }
 
   tags:
     - flocker_certificates
-    - flocker_control_certificate
+    - flocker_authentication_certificate

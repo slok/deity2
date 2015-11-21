@@ -24,6 +24,6 @@
   file:
     path: /etc/flocker
     state: directory
-    mode: 0755
+    mode: 0700
   tags:
     - flocker_certificates

@@ -1,13 +1,8 @@
-- name: Check master node ssh keypair exists
-  stat: path=~/.ssh/id_rsa
-  register: ssh_exists
-  tags:
-    - main_user
-    - master_node_private_key
-
 - name: Create master node ssh keypair
   command: ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
-  when: "not ssh_exists.stat.exists"
+  sudo: False
+  args:
+    creates: ~/.ssh/id_rsa
   tags:
     - main_user
     - master_node_private_key

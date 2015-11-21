@@ -1,35 +1,40 @@
 
-- name: Check flocker cluster certificates
-  stat:
-    path: "/etc/flocker/{{ item }}"
-  register: cluster_certs
-  with_items:
-    - cluster.key
-    - cluster.crt
-  tags:
-    - flocker_certificates
-    - flocker_cluster_certificate
-
 - name: Create flocker cluster certificates
   command: "flocker-ca initialize {{ flocker_cluster_name }}"
   args:
     chdir: /etc/flocker
+    creates:  "cluster.key"
 
   tags:
     - flocker_certificates
     - flocker_cluster_certificate
 
-  when: not cluster_certs.results.0.stat.exists or not cluster_certs.results.1.stat.exists
-
-- name: Create flocker control certificates for nodes
-  command: "flocker-ca create-control-certificate {{ item }}"
+- name: Create flocker control certificate
+  command: "flocker-ca create-control-certificate {{ master_node }}"
   args:
     chdir: /etc/flocker
+    creates:  "control-{{ master_node }}.key"
 
-  with_items: "{{ groups['nodes'] }}"
-  register: command_result
-  failed_when: "command_result.rc and 'File exists' not in command_result.stderr"
-  changed_when: "'Created' in command_result.stdout"
+  tags:
+    - flocker_certificates
+    - flocker_control_certificate
+
+- name: Rename flocker control certificate
+  command: "mv {{ item.src }} {{ item.dest }}"
+  args:
+    chdir: /etc/flocker
+    creates: "{{ item.dest }}"
+  with_items:
+    - { src: "control-{{ master_node }}.crt", dest: "control-service.crt" }
+    - { src: "control-{{ master_node }}.key", dest: "control-service.key" }
+  tags:
+    - flocker_certificates
+    - flocker_control_certificate
+
+- name: Set correct permission to control certificate
+  file:
+    path: /etc/flocker/control-service.key
+    mode: 0600
   tags:
     - flocker_certificates
     - flocker_control_certificate
