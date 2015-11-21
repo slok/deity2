@@ -2,6 +2,6 @@ first_remote_user: "vagrant"
 first_ansible_ssh_user: "vagrant"
 first_ansible_ssh_private_key_file: "~/.vagrant.d/insecure_private_key"
 
-master_node: "{{ hostvars['0.ci.deity2.org']['ansible_ssh_host'] }}"
-consul_node: "{{ hostvars['0.ci.deity2.org']['ansible_ssh_host'] }}"
-flocker_master_node: "{{ hostvars['0.ci.deity2.org']['ansible_ssh_host'] }}"
+master_node: 0.ci.deity2.org
+consul_node: "{{ hostvars[master_node]['ansible_ssh_host'] }}"
+flocker_master_node: "{{ hostvars[master_node]['ansible_ssh_host'] }}"

@@ -54,6 +54,7 @@
   sudo: True
   gather_facts: True
   roles:
+    - common-master-tasks
     - service-discovery
     - swarm-master
     - flocker-master
@@ -66,6 +67,7 @@
   sudo: True
   gather_facts: True
   roles:
+    - common-agent-tasks
     - swarm-agent
     - flocker-agent
   tags:

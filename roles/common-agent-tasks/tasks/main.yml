@@ -1,0 +1,9 @@
+# Some task need to be made from the main node to the agent nodes
+- name: Grant access to master node on agents
+  authorized_key:
+    user: "{{ main_user }}"
+    key: "{{ hostvars[master_node].master_node_private_key.stdout }}"
+
+  tags:
+    - main_user
+    - master_node_private_key

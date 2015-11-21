@@ -1,13 +1,56 @@
-- name: Set flocker certificates on agents
-  synchronize:
-    mode: pull
-    src: "/etc/flocker/{{ item.src }}"
-    dest: "/etc/flocker/{{ item.dest }}"
+#- name: Set flocker certificates on agents
+#  synchronize:
+#    mode: push
+#    src: "/etc/flocker/{{ item.src }}"
+#    dest: "/etc/flocker/{{ item.dest }}"
+#    rsync_opts: "--rsh 'ssh -i /home/{{ main_user }}/.ssh/id_rsa'"
+#    rsync_path: "sudo rsync"
+#
+#  with_items:
+#    - { src: "control-{{ inventory_hostname }}.crt", dest: "control-service.crt" }
+#    - { src: "control-{{ inventory_hostname }}.key", dest: "control-service.key" }
+#    - { src: "cluster.crt", dest: "cluster.crt"}
+#  delegate_to: "{{ master_node }}"
+#  tags:
+#    - flocker_certificates
+#    - flocker_control_certificate
+#    - sync
+#
+
+# Small hack because above command doesn't work wel...
+- name: Register node neccessary flocker keys
+  command: cat "/etc/flocker/{{ item }}"
+  register: "flocker_node_keys"
+  with_items:
+    - "control-{{ inventory_hostname }}.crt"
+    - "control-{{ inventory_hostname }}.key"
+    - "cluster.crt"
+  delegate_to: "{{ master_node }}"
+  tags:
+    - flocker_certificates
+    - flocker_control_certificate
+
+- name: Move node neccessary flocker keys to each node
+  copy:
+    content: "{{ item.stdout }}"
+    dest: "/etc/flocker/{{ item.item }}"
+    owner: root
+    group: root
+    mode: 0666
+  with_items: "{{ flocker_node_keys.results }}"
+  tags:
+    - flocker_certificates
+    - flocker_control_certificate
+
+- name: Set correct name to flocker keys
+  command: "mv {{ item.src }} {{ item.dest }}"
+  args:
+    chdir: /etc/flocker
+    #creates: "{{ item.dest }}"
   with_items:
     - { src: "control-{{ inventory_hostname }}.crt", dest: "control-service.crt" }
-    - { src: "control-{{ inventory_hostname }}.key", dest: "control-service.crt" }
-    - { src: "cluster.crt", dest: "cluster.crt"}
-  delegate_to: "{{ master_node }}"
+    - { src: "control-{{ inventory_hostname }}.key", dest: "control-service.key" }
+
   tags:
     - flocker_certificates
     - flocker_control_certificate

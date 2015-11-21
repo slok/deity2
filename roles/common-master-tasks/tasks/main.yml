@@ -1,0 +1,22 @@
+- name: Check master node ssh keypair exists
+  stat: path=~/.ssh/id_rsa
+  register: ssh_exists
+  tags:
+    - main_user
+    - master_node_private_key
+
+- name: Create master node ssh keypair
+  command: ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+  when: "not ssh_exists.stat.exists"
+  tags:
+    - main_user
+    - master_node_private_key
+
+
+- name: Register master node public key
+  command: cat "/home/{{ main_user }}/.ssh/id_rsa.pub"
+  register: master_node_private_key
+  changed_when: False # Never changes the state of the machines
+  tags:
+    - main_user
+    - master_node_private_key
