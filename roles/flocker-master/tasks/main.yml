@@ -9,6 +9,26 @@
     - flocker_certificates
     - flocker_cluster_certificate
 
+- name: Get cluster certificate
+  command: cat "/etc/flocker/cluster.crt"
+  register: cluster_crt
+  tags:
+    - flocker_certificates
+    - flocker_cluster_certificate
+
+- name: Set cluster certificate on nodes
+  copy:
+    content: "{{ cluster_crt.stdout }}"
+    dest: "/etc/flocker/cluster.crt"
+    owner: root
+    group: root
+    mode: 0600
+  delegate_to: "{{ item }}"
+  with_items: groups['nodes']
+  tags:
+    - flocker_certificates
+    - flocker_cluster_certificate
+
 - name: Create flocker control certificate
   command: "flocker-ca create-control-certificate {{ master_node }}"
   args:
