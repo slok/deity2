@@ -1,0 +1,5 @@
+- name: Enable and restart Docker daemon
+  service:
+    name: docker
+    enabled: yes
+    state: restarted

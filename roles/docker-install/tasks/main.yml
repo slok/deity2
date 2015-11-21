@@ -20,6 +20,8 @@
     name: docker-engine
     update_cache: yes
     state: present
+  notify: Enable and restart Docker daemon
+
   tags:
     - docker_install
 
@@ -32,14 +34,4 @@
       regexp: "#? *DOCKER_OPTS=.*"
   tags:
     - docker_opts
-    - docker_daemon
-
-- name: Enable and restart Docker daemon
-  service:
-    name: docker
-    enabled: yes
-    state: restarted
-
-  tags:
-    - restart
     - docker_daemon
